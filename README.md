@@ -61,15 +61,29 @@ To hack on it without installing: `make run`.
 Three independent parts: the badge for which profile is open, the 5-hour window
 and the weekly window.
 
-| part | options |
+| menu | options |
 |---|---|
-| Profile badge | nothing *(default)* · hexagon · dot · hexagon + name · name only |
-| Each window | ring + number · ring · bar + number · bar · number · number with % · label + number |
-| Each window | show on the bar, or keep it in the menu only |
+| **5-hour window** | show on the bar, and one of seven shapes |
+| **Weekly window (7d)** | the same, independently |
+| **Appearance → colour** | colour by level · monochrome |
+| **Appearance → colour steps** | early warning (40·60·80) · standard (60·80·95) · relaxed (70·85·95) · custom |
+| **Appearance → when Claude is closed** | show a dash · hide the item |
+| **Appearance → profile badge** | nothing · hexagon · dot · hexagon + name · name only |
 
-The profile badge starts hidden: one profile is the stock setup, and a badge
-that always says the same thing is just pixels. It earns its place once
-`profilesDirectory` is configured.
+The seven shapes are ring + number, ring, bar + number, bar, number, number with
+%, and label + number. **Each one is drawn as a preview next to its menu item**,
+at a sample level and with your current thresholds — a menu that names seven
+shapes in words is a menu you have to try one at a time.
+
+The profile badge submenu appears only when `profilesDirectory` is set. With one
+profile a badge would always say the same thing, so it is not offered.
+
+Monochrome keeps the numbers in the ordinary text colour at every level. The
+warning survives anyway: the **weight** still changes at the critical step, which
+is the signal that reaches a colour-blind reader in either scheme.
+
+Hiding the item when Claude is closed also hides the menu that undoes it — it
+comes back the moment Claude opens, and the submenu says so before you click.
 
 The weekly window starts hidden: it moves slowly and is rarely what runs out
 first. Turn it on and it comes in compact, because a second number on the bar
@@ -77,12 +91,14 @@ doubles the digit count.
 
 ## What you can change with `defaults`
 
-Colour thresholds are fine tuning almost nobody touches, so they get no submenu:
+Exact colour steps make a poor menu, so the menu offers three shapes of the same
+curve and leaves the fourth to `defaults`. Pick **Custom** in the menu and these
+take over:
 
 ```bash
-defaults write dev.claude-usage-bar.menubar attentionThreshold -int 60
-defaults write dev.claude-usage-bar.menubar tightThreshold     -int 80
-defaults write dev.claude-usage-bar.menubar criticalThreshold  -int 95
+defaults write dev.claude-usage-bar.menubar attentionThreshold -int 55
+defaults write dev.claude-usage-bar.menubar tightThreshold     -int 75
+defaults write dev.claude-usage-bar.menubar criticalThreshold  -int 90
 ```
 
 Below the first threshold the number stays the ordinary text colour and warms up

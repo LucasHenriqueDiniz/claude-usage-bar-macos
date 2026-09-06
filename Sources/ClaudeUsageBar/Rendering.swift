@@ -130,6 +130,16 @@ private func windowPiece(_ shape: WindowShape, label: String, pct: Int) -> Piece
     }
 }
 
+/// Placeholder while Claude is not running: something clickable that does not
+/// pretend to be a reading.
+private func dashPiece() -> Piece {
+    Piece(width: 9) { x, cy in
+        NSColor.tertiaryLabelColor.setFill()
+        NSBezierPath(roundedRect: NSRect(x: x, y: cy - 1, width: 9, height: 2),
+                     xRadius: 1, yRadius: 1).fill()
+    }
+}
+
 private func profilePiece(_ shape: ProfileShape, profile: String?) -> Piece? {
     func name() -> Piece { textPiece(profile ?? "closed", color: profileColor(profile), mono: false) }
     switch shape {
@@ -153,9 +163,9 @@ func barIcon(profile: String?, usage: Usage?) -> NSImage {
             pieces.append(windowPiece(Preferences.shape(window), label: window.label, pct: pct))
         }
     }
-    // A zero-width item cannot be clicked: with everything hidden the hexagon
-    // comes back as the minimum, otherwise the menu is unreachable.
-    if pieces.isEmpty { pieces.append(hexagonPiece(profile)) }
+    // A zero-width item cannot be clicked, so something always gets drawn. With
+    // Claude closed that is a dash; with everything merely hidden, the badge.
+    if pieces.isEmpty { pieces.append(profile == nil ? dashPiece() : hexagonPiece(profile)) }
 
     let row = group(pieces, gap: outerGap)
     let image = NSImage(size: NSSize(width: row.width, height: iconHeight), flipped: false) { _ in
@@ -164,6 +174,28 @@ func barIcon(profile: String?, usage: Usage?) -> NSImage {
     }
     image.cacheMode = .never
     return image
+}
+
+/// Turns one piece into a small image, for menu items.
+private func image(of piece: Piece, height: CGFloat = 16) -> NSImage {
+    let img = NSImage(size: NSSize(width: max(piece.width, 1), height: height), flipped: false) { _ in
+        piece.draw(0, height / 2)
+        return true
+    }
+    img.cacheMode = .never
+    return img
+}
+
+/// A menu that offers seven shapes and describes them in words is a menu you
+/// have to try one by one. These render the real thing, at a sample level, with
+/// the thresholds and colour scheme currently in force.
+func shapePreview(_ shape: WindowShape, label: String, pct: Int = 62) -> NSImage {
+    image(of: windowPiece(shape, label: label, pct: pct))
+}
+
+func badgePreview(_ shape: ProfileShape, profile: String?) -> NSImage? {
+    guard let piece = profilePiece(shape, profile: profile ?? "profile") else { return nil }
+    return image(of: piece)
 }
 
 /// What the bar is saying, in words. Serves VoiceOver, and is the only way to

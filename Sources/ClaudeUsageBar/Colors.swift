@@ -58,6 +58,10 @@ let trackColor   = NSColor.labelColor.withAlphaComponent(0.18)
 /// Stays the ordinary text colour while there is room, and warms up as things
 /// tighten.
 func usageColor(_ pct: Int) -> NSColor {
+    // Monochrome drops the tones but not the warning: usageWeight() still bolds
+    // at the critical step, which is the signal that survives a colour-blind
+    // reader anyway.
+    if Preferences.colorScheme == .monochrome { return NSColor.labelColor }
     if pct >= Preferences.criticalThreshold  { return criticalColor }
     if pct >= Preferences.tightThreshold     { return tightColor }
     if pct >= Preferences.attentionThreshold { return attentionColor }

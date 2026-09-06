@@ -69,6 +69,62 @@ enum Window: String, CaseIterable {
     var defaultShape: WindowShape { self == .fiveHour ? .ringNumber : .ring }
 }
 
+/// How much colour the bar spends. Monochrome keeps the numbers in the ordinary
+/// text colour at every level — the weight change at the critical step still
+/// happens, so the warning survives without the bar ever going loud.
+enum ColorScheme: String, CaseIterable {
+    case colored
+    case monochrome
+
+    var label: String {
+        switch self {
+        case .colored:    return "Colour by level"
+        case .monochrome: return "Monochrome"
+        }
+    }
+}
+
+/// What the bar does while Claude is not running and there is nothing to report.
+enum ClosedBehavior: String, CaseIterable {
+    case dash
+    case hidden
+
+    var label: String {
+        switch self {
+        case .dash:   return "Show a dash"
+        case .hidden: return "Hide the item"
+        }
+    }
+}
+
+/// Where the colour steps sit. Exact numbers make a poor menu, so the menu
+/// offers three shapes of the same curve and leaves the fourth to `defaults`.
+enum ThresholdPreset: String, CaseIterable {
+    case early
+    case standard
+    case relaxed
+    case custom
+
+    var label: String {
+        switch self {
+        case .early:    return "Early warning (40 · 60 · 80)"
+        case .standard: return "Standard (60 · 80 · 95)"
+        case .relaxed:  return "Relaxed (70 · 85 · 95)"
+        case .custom:   return "Custom (defaults write)"
+        }
+    }
+
+    /// nil for `custom`, which reads the three keys instead.
+    var steps: (attention: Int, tight: Int, critical: Int)? {
+        switch self {
+        case .early:    return (40, 60, 80)
+        case .standard: return (60, 80, 95)
+        case .relaxed:  return (70, 85, 95)
+        case .custom:   return nil
+        }
+    }
+}
+
 /// Preferences in UserDefaults, i.e. ~/Library/Preferences/<domain>.plist.
 ///
 /// Shape and visibility get menu items. The colour thresholds do not: they are
@@ -94,9 +150,30 @@ enum Preferences {
         UserDefaults.standard.set(shape.rawValue, forKey: "shape-\(w.rawValue)")
     }
 
-    static var attentionThreshold: Int { integer("attentionThreshold", fallback: 60) }
-    static var tightThreshold: Int     { integer("tightThreshold",     fallback: 80) }
-    static var criticalThreshold: Int  { integer("criticalThreshold",  fallback: 95) }
+    static var colorScheme: ColorScheme {
+        get { ColorScheme(rawValue: string("colorScheme")) ?? .colored }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: "colorScheme") }
+    }
+
+    static var closedBehavior: ClosedBehavior {
+        get { ClosedBehavior(rawValue: string("closedBehavior")) ?? .dash }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: "closedBehavior") }
+    }
+
+    static var thresholdPreset: ThresholdPreset {
+        get { ThresholdPreset(rawValue: string("thresholdPreset")) ?? .standard }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: "thresholdPreset") }
+    }
+
+    static var attentionThreshold: Int {
+        thresholdPreset.steps?.attention ?? integer("attentionThreshold", fallback: 60)
+    }
+    static var tightThreshold: Int {
+        thresholdPreset.steps?.tight ?? integer("tightThreshold", fallback: 80)
+    }
+    static var criticalThreshold: Int {
+        thresholdPreset.steps?.critical ?? integer("criticalThreshold", fallback: 95)
+    }
 
     /// Changes when any visible preference changes, so the button is redrawn
     /// without needing one observer per key.
@@ -104,6 +181,8 @@ enum Preferences {
         var parts = [profileShape.rawValue]
         for w in Window.allCases { parts.append("\(shows(w))\(shape(w).rawValue)") }
         parts.append("\(attentionThreshold)/\(tightThreshold)/\(criticalThreshold)")
+        parts.append(colorScheme.rawValue)
+        parts.append(closedBehavior.rawValue)
         return parts.joined(separator: "|")
     }
 
