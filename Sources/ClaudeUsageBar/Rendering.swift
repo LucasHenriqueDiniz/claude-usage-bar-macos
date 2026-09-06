@@ -170,12 +170,16 @@ func barIcon(profile: String?, usage: Usage?) -> NSImage {
 /// inspect the item from outside now that there is no title.
 func summary(profile: String?, usage: Usage?) -> String {
     guard let profile else { return "Claude closed" }
-    var parts = [profile]
+    // With the badge hidden the profile is not on the bar, so it must not be in
+    // the label either — a hexagon carries the profile by colour alone, which is
+    // exactly when naming it earns its place.
+    var parts = Preferences.profileShape == .hidden ? [] : [profile]
     if let usage {
         for (window, pct) in [(Window.fiveHour, usage.fiveHour), (Window.weekly, usage.weekly)] {
             guard let pct, Preferences.shows(window) else { continue }
             parts.append("\(window.label) \(pct)%")
         }
     }
-    return parts.joined(separator: ", ")
+    return parts.isEmpty ? "Claude running, no recent usage sample"
+                         : parts.joined(separator: ", ")
 }

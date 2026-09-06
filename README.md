@@ -4,7 +4,7 @@ Your Claude plan usage in the macOS menu bar — the 5-hour window and the weekl
 one, live, without opening anything.
 
 ```
-⬢ ◔ 7   ◔ 53
+◔ 7   ◔ 53
 ```
 
 ## Why this exists
@@ -63,9 +63,13 @@ and the weekly window.
 
 | part | options |
 |---|---|
-| Profile badge | hexagon · dot · hexagon + name · name only · nothing |
+| Profile badge | nothing *(default)* · hexagon · dot · hexagon + name · name only |
 | Each window | ring + number · ring · bar + number · bar · number · number with % · label + number |
 | Each window | show on the bar, or keep it in the menu only |
+
+The profile badge starts hidden: one profile is the stock setup, and a badge
+that always says the same thing is just pixels. It earns its place once
+`profilesDirectory` is configured.
 
 The weekly window starts hidden: it moves slowly and is rarely what runs out
 first. Turn it on and it comes in compact, because a second number on the bar

@@ -6,7 +6,9 @@
 
 import Foundation
 
-/// How the "which profile is open" badge appears.
+/// How the "which profile is open" badge appears. Hidden by default: one
+/// profile is the stock setup, and a badge that always says the same thing is
+/// just pixels. It earns its place once `profilesDirectory` is configured.
 enum ProfileShape: String, CaseIterable {
     case hexagon
     case dot
@@ -74,7 +76,7 @@ enum Window: String, CaseIterable {
 /// than it is worth — they live in `defaults write`, documented in the README.
 enum Preferences {
     static var profileShape: ProfileShape {
-        get { ProfileShape(rawValue: string("profileShape")) ?? .hexagon }
+        get { ProfileShape(rawValue: string("profileShape")) ?? .hidden }
         set { UserDefaults.standard.set(newValue.rawValue, forKey: "profileShape") }
     }
 
