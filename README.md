@@ -46,7 +46,7 @@ lie rather than old news.
 Requires macOS 13+ and a Swift toolchain (Xcode or the Command Line Tools).
 
 ```bash
-git clone https://github.com/<you>/claude-usage-bar-macos
+git clone https://github.com/LucasHenriqueDiniz/claude-usage-bar-macos
 cd claude-usage-bar-macos
 make install
 ```
@@ -130,7 +130,7 @@ set a label:
 ```bash
 osascript -e 'tell application "System Events" to tell process "ClaudeUsageBar" \
   to get description of menu bar item 1 of menu bar 1'
-# → trabalho, 5h 7%, 7d 53%
+# → 5h 7%, 7d 53%
 ```
 
 You can click menu items from there too, which is how you test the preferences
