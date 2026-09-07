@@ -9,8 +9,7 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-000000)](#install)
 [![Swift](https://img.shields.io/badge/swift-5.9-F05138)](Package.swift)
 [![Runs as](https://img.shields.io/badge/runs%20as-menu%20bar%20agent-6AB4FF)](#install)
-[![Network](https://img.shields.io/badge/network-none-brightgreen)](#where-the-number-comes-from)
-[![Token](https://img.shields.io/badge/api%20token-not%20needed-brightgreen)](#where-the-number-comes-from)
+[![Data](https://img.shields.io/badge/data-local%20file%2C%20no%20network-brightgreen)](#where-the-number-comes-from)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A menu bar agent that reads the usage file Claude Desktop already writes, and draws it where you can see it without clicking anything. No API token, no network calls, no scraping.
